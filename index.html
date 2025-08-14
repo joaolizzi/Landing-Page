@@ -3,480 +3,428 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Roleta - Versão estilo "tigrinho" (alternativa legal)</title>
+<title>Slot Demo — Versão avançada (original)</title>
 <style>
   :root{
-    --bg:#0f1724;
-    --card:#0b1220;
-    --accent:#ffb020;
-    --muted:#9aa6b2;
-    --glass: rgba(255,255,255,0.04);
+    --bg1:#071028; --bg2:#071827;
+    --card:#081827; --accent:#ffb63b; --accent2:#ff6b6b;
+    --glass: rgba(255,255,255,0.03);
+    --muted:#93a4b2;
     font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
   }
   *{box-sizing:border-box}
-  html,body{height:100%;}
+  html,body{height:100%}
   body{
-    margin:0;
-    background: linear-gradient(180deg,var(--bg) 0%, #071024 100%);
-    color:#e6eef6;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    padding:20px;
+    margin:0; background:linear-gradient(180deg,var(--bg1),var(--bg2));
+    color:#eaf6ff; display:flex;align-items:center;justify-content:center;padding:18px;
   }
-
-  .app{
-    width:100%;
-    max-width:920px;
+  .wrap{width:100%;max-width:980px;display:grid;grid-template-columns:1fr 360px;gap:18px;}
+  @media(max-width:900px){.wrap{grid-template-columns:1fr;}}
+  .board{
     background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-    border-radius:14px;
-    padding:20px;
-    box-shadow: 0 10px 30px rgba(2,6,23,0.6);
-    display:grid;
-    grid-template-columns: 1fr 340px;
-    gap:20px;
+    border-radius:14px;padding:18px; box-shadow:0 12px 30px rgba(2,6,23,0.6);
   }
-
-  @media (max-width:880px){
-    .app{grid-template-columns: 1fr; padding:16px;}
-  }
-
-  .game{
-    padding:18px;
-    background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent);
-    border-radius:10px;
-    display:flex;
-    flex-direction:column;
-    gap:14px;
-  }
-
-  .header{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:12px;
-  }
-  .title{
-    display:flex;
-    gap:12px;
-    align-items:center;
-  }
-  .logo{
-    width:46px; height:46px; border-radius:10px;
-    background:linear-gradient(135deg,#ffb020,#ff6b6b);
-    display:flex;align-items:center;justify-content:center;font-weight:700;
-    color:#051725; font-size:20px;
-    box-shadow: 0 6px 14px rgba(255,176,32,0.12);
-  }
-  .h1{font-size:18px; margin:0;}
-  .muted{color:var(--muted); font-size:13px}
+  .topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
+  .brand{display:flex;gap:12px;align-items:center}
+  .logo{width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-weight:800;color:#071028;font-size:22px}
+  h1{margin:0;font-size:18px}
+  .muted{color:var(--muted);font-size:13px}
 
   /* reels area */
-  .reels-wrap{
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    gap:12px;
-    padding:12px;
-    background:var(--glass);
-    border-radius:10px;
-    min-height:220px;
+  .reels{
+    background:linear-gradient(180deg, rgba(255,255,255,0.012), transparent);
+    padding:18px;border-radius:12px;display:flex;gap:14px;align-items:center;justify-content:center;
   }
-
   .reel{
-    width:110px;
-    height:160px;
-    overflow:hidden;
-    border-radius:10px;
-    background:linear-gradient(180deg,#071827, #0b2838);
-    box-shadow: inset 0 1px 0 rgba(255,255,255,0.02), 0 8px 18px rgba(2,6,23,0.6);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    position:relative;
-    border:1px solid rgba(255,255,255,0.03);
+    width:120px;height:180px;overflow:hidden;border-radius:12px;background:linear-gradient(180deg,#071827,#08283a);
+    position:relative;border:1px solid rgba(255,255,255,0.04);box-shadow:inset 0 2px 8px rgba(0,0,0,0.6);
+    display:flex;align-items:center;justify-content:center;
+    perspective:800px;
   }
-
-  .reel-track{
-    position:absolute;
-    width:100%;
-    top:0;
-    left:0;
+  .reel .viewport{
+    width:100%;height:100%;position:absolute;left:0;top:0;will-change:transform;
   }
-
-  .symbol{
-    height:160px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-size:52px;
+  .slot-row{
+    height:180px;display:flex;align-items:center;justify-content:center;font-size:56px;
     user-select:none;
   }
+  /* motion blur effect using filter while spinning */
+  .reel.spin .viewport{filter:blur(2.6px) saturate(1.05);transform-origin:center; transition:filter 200ms}
+  .reel.win{box-shadow:0 10px 36px rgba(255,190,40,0.22), 0 2px 8px rgba(255,110,110,0.06);transform:translateY(-6px);}
 
-  .controls{
-    display:flex;
-    gap:12px;
-    align-items:center;
-    justify-content:space-between;
-    margin-top:6px;
-  }
-  .bets{
-    display:flex;
-    gap:8px;
-    align-items:center;
-  }
-  input[type=number]{
-    width:120px;padding:8px;border-radius:8px;border:0;background:#071827;color:#dff0ff;font-weight:600;
-    box-shadow: inset 0 -4px 20px rgba(0,0,0,0.6);
-  }
+  /* controls */
+  .controls{display:flex;align-items:center;gap:12px;margin-top:12px}
+  .spacer{flex:1}
+  .btn{background:var(--accent);border:0;padding:12px 18px;border-radius:10px;font-weight:800;color:#071028;cursor:pointer;box-shadow:0 8px 22px rgba(255,182,60,0.12)}
+  .btn:active{transform:translateY(1px)}
+  input[type=number]{width:110px;border-radius:10px;padding:10px;border:0;background:#071827;color:#dff6ff;font-weight:700;text-align:center}
 
-  button{
-    border:0;
-    padding:12px 18px;
-    border-radius:10px;
-    background:var(--accent);
-    color:#051725;
-    font-weight:700;
-    cursor:pointer;
-    box-shadow: 0 8px 18px rgba(255,176,32,0.12);
-  }
-  button:active{transform:translateY(1px)}
-  .spin-btn{
-    width:100%;
-    font-size:18px;
-    display:block;
-  }
-
-  .panel{
-    padding:16px;
-    background:linear-gradient(180deg, rgba(255,255,255,0.015), transparent);
-    border-radius:10px;
-  }
-
-  .stats{
-    display:flex;gap:10px;flex-direction:column;
-  }
-  .stat-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;}
-  .big{font-size:20px;font-weight:700}
+  /* sidebar */
+  .side{padding:18px;background:linear-gradient(180deg, rgba(255,255,255,0.015), transparent);border-radius:12px}
+  .stat{display:flex;justify-content:space-between;align-items:center;padding:8px 0}
+  .big{font-size:20px;font-weight:800}
   .small{font-size:13px;color:var(--muted)}
 
-  .result{
-    margin-top:10px;
-    font-weight:700;
-    font-size:16px;
-    min-height:24px;
-    color:#cde7ff;
-  }
+  /* particle canvas overlays */
+  canvas{position:absolute;left:0;top:0;pointer-events:none}
 
-  footer.note{font-size:12px;color:var(--muted);margin-top:8px}
+  /* shimmer */
+  .glow{position:relative;overflow:hidden}
+  .glow::after{content:"";position:absolute;left:-120%;top:0;width:40%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.06),transparent);transform:skewX(-18deg);animation:shimmer 5s linear infinite}
+  @keyframes shimmer{to{left:120%}}
 
-  /* nice shimmer for winning reels */
-  .win {
-    box-shadow: 0 0 18px rgba(255,200,50,0.18), 0 6px 30px rgba(255,140,20,0.06) !important;
-    transform: scale(1.03);
-  }
+  footer{color:var(--muted);font-size:12px;margin-top:8px}
 </style>
 </head>
 <body>
-  <div class="app" role="application" aria-label="Slot game">
-    <div class="game">
-      <div class="header">
-        <div class="title">
+  <div class="wrap">
+    <div class="board">
+      <div class="topbar">
+        <div class="brand">
           <div class="logo">RT</div>
           <div>
-            <div class="h1">Roleta Alternativa</div>
-            <div class="muted">Toque em SPIN — jogo só para diversão</div>
+            <h1>Roleta Avançada</h1>
+            <div class="muted">Versão estilo — original e legal</div>
           </div>
         </div>
-        <div style="text-align:right">
-          <div class="small">Versão: demo</div>
-          <div class="muted" style="font-size:12px">Sem dinheiro real</div>
+        <div>
+          <div class="muted" style="text-align:right">Sem dinheiro real • Demo</div>
         </div>
       </div>
 
-      <div class="reels-wrap" id="reelsWrap" aria-hidden="false">
-        <div class="reel" id="reel0" aria-label="Rolo 1">
-          <div class="reel-track" id="track0"></div>
+      <div style="position:relative">
+        <div class="reels" id="reels">
+          <div class="reel" id="reel0" aria-label="Rolo 1"><div class="viewport" id="vp0"></div></div>
+          <div class="reel" id="reel1" aria-label="Rolo 2"><div class="viewport" id="vp1"></div></div>
+          <div class="reel" id="reel2" aria-label="Rolo 3"><div class="viewport" id="vp2"></div></div>
         </div>
-        <div class="reel" id="reel1" aria-label="Rolo 2">
-          <div class="reel-track" id="track1"></div>
-        </div>
-        <div class="reel" id="reel2" aria-label="Rolo 3">
-          <div class="reel-track" id="track2"></div>
-        </div>
+
+        <!-- canvas for particles -->
+        <canvas id="fx" width="900" height="600"></canvas>
       </div>
 
       <div class="controls">
-        <div class="bets">
+        <div style="display:flex;gap:8px;align-items:center">
           <label class="small" for="bet">Aposta</label>
-          <input id="bet" type="number" min="1" step="1" value="5" aria-label="Valor da aposta" />
-          <button id="minBet">-</button>
-          <button id="maxBet">+</button>
+          <input id="bet" type="number" min="1" step="1" value="5" />
+          <button id="lo" class="btn" style="padding:8px 10px">-</button>
+          <button id="hi" class="btn" style="padding:8px 10px">+</button>
         </div>
-        <div style="flex:1"></div>
-        <div style="width:220px">
-          <button id="spin" class="spin-btn" aria-live="polite">SPIN</button>
+
+        <div class="spacer"></div>
+
+        <button id="spin" class="btn" style="width:160px;font-size:18px">SPIN</button>
+      </div>
+
+      <div style="margin-top:12px;display:flex;gap:12px;align-items:center;justify-content:space-between">
+        <div>
+          <div class="small">Último resultado</div>
+          <div id="result" class="big">—</div>
+        </div>
+        <div style="text-align:right">
+          <div class="small">Saldo</div>
+          <div id="balance" class="big">100</div>
         </div>
       </div>
 
-      <div class="panel">
-        <div class="stats">
-          <div class="stat-row"><div class="small">Saldo</div><div id="balance" class="big">100</div></div>
-          <div class="stat-row"><div class="small">Último ganho</div><div id="lastWin" class="big">-</div></div>
-          <div class="result" id="resultText" aria-live="polite"></div>
-        </div>
-        <div class="note">Use o botão SPIN. Não é jogo de azar real — apenas diversão.</div>
-      </div>
+      <footer>Toque em SPIN — jogo para diversão (sem dinheiro real). Ícones originais.</footer>
     </div>
 
-    <div class="panel" aria-label="Informações">
-      <h3 style="margin-top:0">Regras & Pagamentos</h3>
-      <ul style="padding-left:18px;margin:6px 0;color:var(--muted)">
-        <li>3 iguais — paga 10× a aposta</li>
-        <li>2 iguais — paga 2× a aposta</li>
-        <li>Ícones únicos e imaginários — jogo criado para aprendizado e diversão</li>
-      </ul>
-      <div style="margin-top:12px">
-        <strong>Ícones:</strong>
-        <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap">
-          <!-- legenda dos símbolos -->
-          <div style="display:flex;gap:8px;align-items:center;"><span style="font-size:26px">🍊</span><small class="muted">Laranja</small></div>
-          <div style="display:flex;gap:8px;align-items:center;"><span style="font-size:26px">🍋</span><small class="muted">Limão</small></div>
-          <div style="display:flex;gap:8px;align-items:center;"><span style="font-size:26px">🍒</span><small class="muted">Cereja</small></div>
-          <div style="display:flex;gap:8px;align-items:center;"><span style="font-size:26px">⭐</span><small class="muted">Estrela</small></div>
-          <div style="display:flex;gap:8px;align-items:center;"><span style="font-size:26px">🐯</span><small class="muted">Tigre (icone original)</small></div>
-          <div style="display:flex;gap:8px;align-items:center;"><span style="font-size:26px">🍇</span><small class="muted">Uva</small></div>
-        </div>
+    <div class="side">
+      <h3 style="margin-top:0">Regras & Payouts</h3>
+      <div style="margin:8px 0;color:var(--muted)">
+        3 iguais: <strong>12×</strong><br>
+        2 iguais: <strong>3×</strong><br>
+        Símbolo especial (estrela): <strong>jackpot 30×</strong>
       </div>
 
-      <hr style="border:none;border-top:1px solid rgba(255,255,255,0.03);margin:14px 0" />
-      <div style="font-size:13px;color:var(--muted)">
-        Dica: toque o SPIN com o polegar para jogar no celular. Código aberto — personalize os ícones e pagamentos como quiser.
+      <hr style="border:none;border-top:1px solid rgba(255,255,255,0.03);margin:12px 0">
+
+      <div class="stat"><div class="small">Sessão</div><div id="sessionWins" class="small">0 vitórias</div></div>
+      <div class="stat"><div class="small">Maior ganho</div><div id="bestWin" class="small">-</div></div>
+
+      <hr style="border:none;border-top:1px solid rgba(255,255,255,0.03);margin:12px 0">
+      <div class="small">Configurações:</div>
+      <div style="margin-top:8px;display:flex;gap:8px">
+        <button id="reset" class="btn" style="padding:8px">Reset Saldo</button>
+        <button id="togSound" class="btn" style="padding:8px">Som On</button>
+      </div>
+
+      <div style="margin-top:12px;color:var(--muted);font-size:13px">
+        Dica: toque e segure SPIN para spin rápido. Código pronto para ser transformado em PWA.
       </div>
     </div>
   </div>
 
 <script>
-/*
-  Slot machine demo
-  - 3 reels
-  - Symbols array uses emoji (can replace by inline SVGs)
-  - Physics: each reel will spin with random extra rotations and stop at a symbol index
-*/
+/* ======= Config e Estado ======= */
+const SYMBOLS = [
+  {id:'orange', label:'🍊'},
+  {id:'lemon', label:'🍋'},
+  {id:'cherry', label:'🍒'},
+  {id:'grape', label:'🍇'},
+  {id:'pine', label:'🍍'},
+  {id:'star', label:'⭐'},
+  {id:'tiger', label:'🐯'}
+];
+const REELS = 3;
+const VIEWPORT = 180; // px height per symbol
+const TRACK_REPEAT = 7; // quantas repetições para animação longa
+const balanceEl = document.getElementById('balance');
+const resultEl = document.getElementById('result');
+const sessionWinsEl = document.getElementById('sessionWins');
+const bestWinEl = document.getElementById('bestWin');
 
-const symbols = ["🍊","🍋","🍒","⭐","🐯","🍇","🍉","🔔","🍍"]; // 9 symbols
-const reels = 3;
-const symbolHeight = 160; // must match .symbol height in CSS
-let balanceEl = document.getElementById('balance');
-let lastWinEl = document.getElementById('lastWin');
-let resultText = document.getElementById('resultText');
-let betInput = document.getElementById('bet');
-let spinBtn = document.getElementById('spin');
-
-let balance = 100;
 let spinning = false;
-let lastWin = 0;
-
-function format(n){ return Math.round(n*100)/100; }
-function updateUI(){
-  balanceEl.textContent = format(balance);
-  lastWinEl.textContent = lastWin>0 ? "+"+format(lastWin) : (lastWin===0? '-' : '-' + format(Math.abs(lastWin)));
-}
-
+let balance = Number(localStorage.getItem('slot_balance')||100);
+let sessionWins = 0;
+let bestWin = Number(localStorage.getItem('slot_best')||0);
 updateUI();
 
-// Create tracks: each track will contain symbol nodes repeated multiple times to allow smooth scroll
-for(let r=0;r<reels;r++){
-  const track = document.getElementById('track'+r);
-  track.style.transition = 'none';
-  // Fill the track with multiple cycles of symbols to allow long scroll
-  for(let rep=0; rep<6; rep++){
-    for(let s=0;s<symbols.length;s++){
-      const el = document.createElement('div');
-      el.className = 'symbol';
-      el.innerText = symbols[s];
-      track.appendChild(el);
+/* ======= Construção dos Tracks (DOM) ======= */
+for(let r=0;r<REELS;r++){
+  const vp = document.getElementById('vp'+r);
+  // criar muitos elementos para scroll longo
+  vp.style.transition = 'none';
+  vp.style.transform = `translateY(0px)`;
+  vp.innerHTML = '';
+  for(let rep=0; rep<TRACK_REPEAT; rep++){
+    for(let s=0;s<SYMBOLS.length;s++){
+      const d = document.createElement('div');
+      d.className = 'slot-row';
+      d.style.height = VIEWPORT+'px';
+      d.innerText = SYMBOLS[s].label;
+      vp.appendChild(d);
     }
   }
-  // Clone first symbol at end so loop looks nicer
+  // centralizar para exibir símbolo do meio (opcional)
+  vp.style.transform = `translateY(${-VIEWPORT}px)`;
 }
 
-// Utility to get random integer
-function randInt(min,max){ return Math.floor(Math.random()*(max-min+1))+min }
+/* ======= UI e controles ======= */
+const betInput = document.getElementById('bet');
+document.getElementById('lo').addEventListener('click', ()=>{ let v=Number(betInput.value)||1; v=Math.max(1,Math.floor(v/2)); betInput.value=v; });
+document.getElementById('hi').addEventListener('click', ()=>{ let v=Number(betInput.value)||1; betInput.value=Math.min(9999, Math.floor(v*2)); });
+const spinBtn = document.getElementById('spin');
+spinBtn.addEventListener('click', spinHandler);
+spinBtn.addEventListener('contextmenu', e=>{ e.preventDefault(); quickSpin(); }); // toque longo / segurar? fallback
 
-// Do a spin
-spinBtn.addEventListener('click', async ()=>{
+document.getElementById('reset').addEventListener('click', ()=>{
+  balance = 100; localStorage.setItem('slot_balance', balance); updateUI();
+});
+const sndBtn = document.getElementById('togSound');
+let soundOn = true;
+sndBtn.addEventListener('click', ()=>{ soundOn = !soundOn; sndBtn.textContent = soundOn ? 'Som On' : 'Som Off'; });
+
+/* ======= Partículas Canvas ======= */
+const canvas = document.getElementById('fx');
+const ctx = canvas.getContext('2d');
+function fitCanvas(){ const rect = document.querySelector('.wrap').getBoundingClientRect(); canvas.width = rect.width; canvas.height = rect.height * 1.05; canvas.style.width = rect.width+'px'; canvas.style.height = canvas.height+'px'; }
+fitCanvas();
+window.addEventListener('resize', fitCanvas);
+let particles = [];
+function emitParticles(x,y, color='#ffcf6b',count=40){
+  for(let i=0;i<count;i++){
+    particles.push({
+      x, y,
+      vx: (Math.random()-0.5)*6,
+      vy: (Math.random()-0.9)* -6,
+      life: 60 + Math.random()*40,
+      size: 6+Math.random()*8,
+      color,
+    });
+  }
+}
+function updateParticles(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  for(let i=particles.length-1;i>=0;i--){
+    const p = particles[i];
+    p.x += p.vx; p.y += p.vy; p.vy += 0.18; p.life--;
+    if(p.life<=0 || p.y>canvas.height+50) particles.splice(i,1);
+    else{
+      ctx.globalAlpha = Math.max(0, p.life/100);
+      ctx.fillStyle = p.color;
+      ctx.beginPath(); ctx.arc(p.x, p.y, p.size*(p.life/100), 0, Math.PI*2); ctx.fill();
+    }
+  }
+  requestAnimationFrame(updateParticles);
+}
+requestAnimationFrame(updateParticles);
+
+/* ======= WebAudio simples para feedback sonoro ======= */
+const AudioCtx = window.AudioContext || window.webkitAudioContext;
+let audioCtx;
+function playBeep(freq=440, time=0.05, type='sine', gain=0.08){
+  if(!soundOn) return;
+  if(!audioCtx) audioCtx = new AudioCtx();
+  const o = audioCtx.createOscillator();
+  const g = audioCtx.createGain();
+  o.type = type; o.frequency.value = freq;
+  g.gain.value = gain;
+  o.connect(g); g.connect(audioCtx.destination);
+  o.start(); o.stop(audioCtx.currentTime + time);
+}
+
+/* ======= Spin physics: each rolo tem duração própria, easing out ======= */
+function spinHandler(){
   if(spinning) return;
-  let bet = Number(betInput.value) || 0;
-  if(bet <= 0){ resultText.textContent = 'Aposta inválida.'; return; }
-  if(bet > balance){ resultText.textContent = 'Saldo insuficiente.'; return; }
+  let bet = Math.max(1, Math.floor(Number(betInput.value) || 1));
+  if(bet > balance){ resultEl.textContent = 'Saldo insuficiente'; playBeep(160,0.12,'sawtooth',0.06); return; }
+  startSpin(bet);
+}
+function quickSpin(){ // spin rápido (menos duration)
+  if(spinning) return;
+  let bet = Math.max(1, Math.floor(Number(betInput.value) || 1));
+  if(bet > balance){ resultEl.textContent = 'Saldo insuficiente'; return; }
+  startSpin(bet, {fast:true});
+}
+
+/* main spin routine */
+async function startSpin(bet, opts={}){
   spinning = true;
   spinBtn.disabled = true;
-  resultText.textContent = '';
-  balance -= bet;
-  updateUI();
+  balance -= bet; localStorage.setItem('slot_balance', balance); updateUI();
+  resultEl.textContent = 'Girando...';
+  playBeep(420,0.06,'sine',0.06);
 
-  // Choose final symbol indices for each reel
-  const finalIndices = [];
-  for(let r=0;r<reels;r++){
-    finalIndices.push(randInt(0, symbols.length-1));
+  // determine final symbols (random) but with small weight to make star rarer
+  function randSymbol(){
+    const r = Math.random();
+    if(r>0.96) return SYMBOLS.findIndex(s=>s.id==='star'); // raridade
+    return Math.floor(Math.random()*SYMBOLS.length);
   }
+  const finals = [randSymbol(), randSymbol(), randSymbol()];
 
-  // For visual fairness, make center symbol the result.
-  // We'll animate each reel with different durations and easing via JS loop.
+  // animate each reel: compute total steps (symbol counts) to move
   const promises = [];
-  for(let r=0;r<reels;r++){
-    promises.push(spinReel(r, finalIndices[r], 2000 + r*500 + randInt(0,600)));
+  for(let r=0;r<REELS;r++){
+    const base = opts.fast ? randInt(3,6) : randInt(7,11);
+    const extra = randInt(0, SYMBOLS.length-1);
+    const totalSymbols = base*SYMBOLS.length + finals[r] + extra;
+    const duration = opts.fast ? 700 + r*80 : 1500 + r*450 + Math.floor(Math.random()*300);
+    promises.push(animateReel(r, totalSymbols, duration));
   }
 
-  // Wait for all to finish
+  // visual: add spin class to blur reels
+  for(let r=0;r<REELS;r++) document.getElementById('reel'+r).classList.add('spin');
+
   await Promise.all(promises);
 
-  // Determine payout
-  // If all three equal
-  const [a,b,c] = finalIndices;
+  // remove spin blur
+  for(let r=0;r<REELS;r++) document.getElementById('reel'+r).classList.remove('spin');
+
+  // compute payout
+  const ids = finals.map(i=>SYMBOLS[i].id);
   let win = 0;
-  if(a===b && b===c){
-    win = bet * 10;
-    resultText.textContent = `Três ${symbols[a]}! Você ganhou ${win} moedas 🎉`;
-    // visual highlight
-    highlightWinningReels([0,1,2]);
-  } else if(a===b || b===c || a===c){
-    win = bet * 2;
-    resultText.textContent = `Dois iguais! Você ganhou ${win} moedas ✨`;
-    // find which reels match
-    const winners = [];
-    if(a===b) winners.push(0,1);
-    if(b===c) winners.push(1,2);
-    if(a===c) winners.push(0,2);
-    highlightWinningReels([...new Set(winners)]);
-  } else {
-    resultText.textContent = 'Que pena — sem combinação. Tente novamente.';
+  if(ids[0]===ids[1] && ids[1]===ids[2]){ // triple
+    if(ids[0]==='star') win = bet * 30;
+    else win = bet * 12;
+  } else if(ids[0]===ids[1] || ids[1]===ids[2] || ids[0]===ids[2]){
+    win = bet * 3;
   }
 
-  balance += win;
-  lastWin = win;
-  updateUI();
-
-  // small pause for UX
-  setTimeout(()=>{ spinning=false; spinBtn.disabled=false; }, 350);
-
-});
-
-// spinReel: animates track to land with center symbol = index
-function spinReel(reelIndex, targetSymbolIndex, durationMs){
-  return new Promise(resolve=>{
-    const track = document.getElementById('track'+reelIndex);
-    // The track currently is multiple repetitions of symbols. We'll move it vertically.
-    // compute how many symbol-steps to spin: base cycles + offset to target
-    // pick a large offset for a longer spin
-    const cycles = randInt(6,9); // how many full cycles
-    const totalSymbols = symbols.length * cycles + targetSymbolIndex;
-    const finalOffset = totalSymbols * symbolHeight;
-
-    // reset transition to none to set starting translate
-    track.style.transition = 'none';
-
-    // compute current translateY (if any)
-    const currentTransform = getComputedStyle(track).transform;
-    let currentY = 0;
-    if(currentTransform && currentTransform !== 'none'){
-      const vals = currentTransform.match(/matrix.*\((.+)\)/)[1].split(', ');
-      currentY = parseFloat(vals[5]);
+  if(win>0){
+    balance += win; localStorage.setItem('slot_balance', balance);
+    resultEl.textContent = `Ganhou ${win} moedas! (${SYMBOLS[finals[0]].label} ${SYMBOLS[finals[1]].label} ${SYMBOLS[finals[2]].label})`;
+    sessionWins++; sessionWinsEl.textContent = sessionWins + ' vitórias';
+    if(win > bestWin){ bestWin = win; localStorage.setItem('slot_best', bestWin); bestWinEl.textContent = win; }
+    // celebratory particles above reels
+    const rect = document.querySelector('.reels').getBoundingClientRect();
+    emitParticles(rect.left + rect.width/2, rect.top + 40, '#ffd86b', 80);
+    playBeep(820,0.12,'sine',0.12);
+    setTimeout(()=>{ playBeep(580,0.08,'triangle',0.06)}, 120);
+    // highlight reels
+    for(let r=0;r<REELS;r++){
+      const el = document.getElementById('reel'+r);
+      if(ids.filter(x=>x===ids[r]).length>=2) el.classList.add('win');
+      setTimeout(()=>el.classList.remove('win'), 1600);
     }
+  } else {
+    resultEl.textContent = `Sem combinação (${SYMBOLS[finals[0]].label} ${SYMBOLS[finals[1]].label} ${SYMBOLS[finals[2]].label})`;
+    playBeep(240,0.08,'sawtooth',0.04);
+  }
 
-    // set start position a little negative so movement feels centered
-    // apply transform directly to allow transition
-    // We'll animate from currentY to -finalOffset (negative because moving up)
-    // For simplicity, set start to 0, set translateY to 0 now
-    track.style.transform = `translateY(${currentY}px)`;
+  updateUI();
+  setTimeout(()=>{ spinning=false; spinBtn.disabled=false; }, 420);
+}
 
-    // Force reflow to ensure styles applied
-    track.getBoundingClientRect();
-
-    // Apply transition for duration with cubic-bezier easing (nice ease-out)
-    track.style.transition = `transform ${durationMs}ms cubic-bezier(0.16, 0.84, 0.26, 1)`;
-    track.style.transform = `translateY(${-finalOffset}px)`;
-
-    // After transition ends, snap the DOM so we don't accumulate huge offsets
-    const cleanup = ()=>{
-      // remove listener
-      track.removeEventListener('transitionend', cleanup);
-      // compute which symbol is at top after finalOffset: modulo symbols.length
-      // We'll set transform to a small value showing the chosen symbol centered:
-      const offsetSymbols = totalSymbols % symbols.length;
-      // rebuild track to a neutral state: set transform to negative (offsetSymbols * symbolHeight)
-      // To avoid jank, temporarily disable transition
-      track.style.transition = 'none';
-      // Build a new shorter track that ensures target symbol is at the first visible position
-      // Clear nodes and add a few symbols around the target for visual continuity
-      track.innerHTML = '';
-      // add 4 symbols above, target, and 4 below (wrap using modulo)
-      const context = 4;
-      for(let i=-context; i<=context; i++){
-        const idx = mod(targetSymbolIndex + i, symbols.length);
-        const el = document.createElement('div');
-        el.className = 'symbol';
-        el.innerText = symbols[idx];
-        track.appendChild(el);
+/* animateReel: transita a viewport transform para -totalSymbols * VIEWPORT, com easing */
+function animateReel(reelIndex, totalSymbols, duration){
+  return new Promise(resolve=>{
+    const vp = document.getElementById('vp'+reelIndex);
+    // current transform y
+    let startY = getTranslateY(vp);
+    // final target (negative)
+    const endY = startY - totalSymbols * VIEWPORT;
+    // we will animate using requestAnimationFrame with an easeOutCubic
+    const t0 = performance.now();
+    function frame(t){
+      const p = Math.min(1, (t - t0) / duration);
+      const eased = easeOutCubic(p);
+      const curY = startY + (endY - startY) * eased;
+      vp.style.transform = `translateY(${curY}px)`;
+      if(p < 1) requestAnimationFrame(frame);
+      else {
+        // snap to a short track centered on final symbol to avoid huge offsets
+        // compute final symbol index modulo symbols length
+        const totalSyms = Math.abs(Math.round((endY - startY) / VIEWPORT));
+        const finalIndex = totalSyms % SYMBOLS.length;
+        // rebuild smaller track around finalIndex
+        vp.innerHTML = '';
+        const context = 3;
+        for(let i=-context;i<=context;i++){
+          const idx = mod(finalIndex + i, SYMBOLS.length);
+          const d = document.createElement('div');
+          d.className = 'slot-row';
+          d.style.height = VIEWPORT+'px';
+          d.innerText = SYMBOLS[idx].label;
+          vp.appendChild(d);
+        }
+        // position so that middle symbol is centered
+        vp.style.transition = 'none';
+        vp.style.transform = `translateY(${-context*VIEWPORT}px)`;
+        // small delay to smooth final visual
+        setTimeout(()=>resolve(), 40);
       }
-      // position so that the middle symbol (context index) is visible
-      const newOffset = -context * symbolHeight;
-      track.style.transform = `translateY(${newOffset}px)`;
-      // small timeout to re-enable interactions
-      setTimeout(()=>resolve(),50);
-    };
-
-    // Listen for transition end
-    track.addEventListener('transitionend', cleanup);
+    }
+    requestAnimationFrame(frame);
   });
 }
 
+/* easing & helpers */
+function easeOutCubic(t){ return 1 - Math.pow(1 - t, 3); }
+function getTranslateY(el){
+  const st = getComputedStyle(el).transform;
+  if(st && st !== 'none'){
+    const m = st.match(/matrix.*\((.+)\)/);
+    if(m){ const vals = m[1].split(', '); return parseFloat(vals[5]); }
+  }
+  return 0;
+}
+function randInt(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
 function mod(n,m){ return ((n % m) + m) % m; }
 
-// highlight reels indexes (array)
-function highlightWinningReels(indexes){
-  // add class to reel elements for a moment
-  indexes.forEach(i=>{
-    const el = document.getElementById('reel'+i);
-    el.classList.add('win');
-    setTimeout(()=>el.classList.remove('win'), 1400);
-  });
+/* ======= small helpers UI ======= */
+function updateUI(){
+  balanceEl.textContent = balance;
+  sessionWinsEl.textContent = sessionWins + ' vitórias';
+  bestWinEl.textContent = bestWin>0? bestWin : '-';
 }
+updateUI();
 
-/* small helpers for bet buttons */
-document.getElementById('minBet').addEventListener('click', ()=>{
-  let v = Number(betInput.value)||1;
-  v = Math.max(1, Math.floor(v/2));
-  betInput.value = v;
+/* ======= initialize small touch UX: hold spin to quick spin (mobile friendly) ======= */
+let holdTimer = null;
+spinBtn.addEventListener('touchstart', ()=>{
+  holdTimer = setTimeout(()=>{ quickSpin(); }, 400);
 });
-document.getElementById('maxBet').addEventListener('click', ()=>{
-  let v = Number(betInput.value)||1;
-  v = Math.min(9999, Math.floor(v*2));
-  betInput.value = v;
-});
+spinBtn.addEventListener('touchend', ()=>{ if(holdTimer) clearTimeout(holdTimer); });
 
-// Accessibility: allow Enter to spin
-betInput.addEventListener('keydown', (e)=>{ if(e.key === 'Enter'){ spinBtn.click(); } });
+/* ======= small utility: persist balance on unload ======= */
+window.addEventListener('beforeunload', ()=>{ localStorage.setItem('slot_balance', balance); });
 
-// Initialize simple static tracks for first view (so the reels look filled before spin)
-(function initTracks(){
-  for(let r=0;r<reels;r++){
-    const track = document.getElementById('track'+r);
-    // ensure it shows first symbols centered
-    track.innerHTML = '';
-    const context = 4;
-    for(let i=-context;i<=context;i++){
-      const idx = mod(i, symbols.length);
-      const el = document.createElement('div');
-      el.className = 'symbol';
-      el.innerText = symbols[idx];
-      track.appendChild(el);
-    }
-    // position so that center symbol is visible
-    track.style.transform = `translateY(${-context*symbolHeight}px)`;
-  }
-})();
+/* ready */
+document.addEventListener('DOMContentLoaded', ()=>{ /* nothing extra */ });
+
 </script>
 </body>
 </html>
