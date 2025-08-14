@@ -3,341 +3,480 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Roleta de Frutas — Caça-níquel</title>
+<title>Roleta - Versão estilo "tigrinho" (alternativa legal)</title>
 <style>
   :root{
-    --bg:#0f1724; --card:#0b1220; --accent:#f59e0b; --muted:#94a3b8;
-    --win:#10b981; --lose:#ef4444; --glass: rgba(255,255,255,0.03);
+    --bg:#0f1724;
+    --card:#0b1220;
+    --accent:#ffb020;
+    --muted:#9aa6b2;
+    --glass: rgba(255,255,255,0.04);
     font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
   }
-  html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#071023 80%); color:#e6eef8}
-  .wrap{max-width:900px;margin:28px auto;padding:20px;}
-  .card{background:linear-gradient(180deg,var(--card), #06131f); border-radius:12px; padding:18px; box-shadow:0 8px 24px rgba(2,6,23,0.6);}
-  h1{margin:0 0 8px;font-size:20px;display:flex;align-items:center;gap:10px}
-  .top{display:flex;gap:12px;flex-wrap:wrap;align-items:center;justify-content:space-between}
-  .controls{display:flex;gap:8px;align-items:center}
-  input[type=number]{width:110px;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:var(--glass);color:inherit}
-  button{padding:10px 14px;border-radius:10px;border:none;background:var(--accent);color:#04111a;font-weight:700;cursor:pointer}
-  button.secondary{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted);font-weight:600}
-  .status{display:flex;gap:12px;align-items:center}
-  .saldo{font-weight:800;color:#c7f2e6}
-  .machine{display:flex;flex-direction:column;align-items:center;margin-top:18px}
-  .reels{display:flex;gap:14px;padding:14px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:12px}
-  .reel{width:110px;height:110px;border-radius:10px;background:#071628;display:flex;align-items:center;justify-content:center;font-size:44px;box-shadow:inset 0 -6px 18px rgba(0,0,0,0.6)}
-  .pointer{margin-top:10px;height:10px;width:220px;background:linear-gradient(90deg,transparent,#e2d7d7,transparent);border-radius:4px}
-  .info{display:flex;gap:14px;margin-top:14px;flex-wrap:wrap;align-items:center}
-  .table{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:12px;border-radius:10px;color:var(--muted)}
-  .history{max-height:160px;overflow:auto;padding:10px;background:rgba(255,255,255,0.02);border-radius:8px;margin-top:12px}
-  .row{display:flex;gap:10px;align-items:center;justify-content:space-between;margin-bottom:6px}
-  .result-win{color:var(--win);font-weight:700}
-  .result-lose{color:var(--lose);font-weight:700}
-  footer{margin-top:16px;color:var(--muted);font-size:13px}
-  @media (max-width:520px){
-    .reel{width:80px;height:80px;font-size:34px}
-    input[type=number]{width:86px}
+  *{box-sizing:border-box}
+  html,body{height:100%;}
+  body{
+    margin:0;
+    background: linear-gradient(180deg,var(--bg) 0%, #071024 100%);
+    color:#e6eef6;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+  }
+
+  .app{
+    width:100%;
+    max-width:920px;
+    background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    border-radius:14px;
+    padding:20px;
+    box-shadow: 0 10px 30px rgba(2,6,23,0.6);
+    display:grid;
+    grid-template-columns: 1fr 340px;
+    gap:20px;
+  }
+
+  @media (max-width:880px){
+    .app{grid-template-columns: 1fr; padding:16px;}
+  }
+
+  .game{
+    padding:18px;
+    background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent);
+    border-radius:10px;
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+  }
+
+  .header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+  }
+  .title{
+    display:flex;
+    gap:12px;
+    align-items:center;
+  }
+  .logo{
+    width:46px; height:46px; border-radius:10px;
+    background:linear-gradient(135deg,#ffb020,#ff6b6b);
+    display:flex;align-items:center;justify-content:center;font-weight:700;
+    color:#051725; font-size:20px;
+    box-shadow: 0 6px 14px rgba(255,176,32,0.12);
+  }
+  .h1{font-size:18px; margin:0;}
+  .muted{color:var(--muted); font-size:13px}
+
+  /* reels area */
+  .reels-wrap{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:12px;
+    padding:12px;
+    background:var(--glass);
+    border-radius:10px;
+    min-height:220px;
+  }
+
+  .reel{
+    width:110px;
+    height:160px;
+    overflow:hidden;
+    border-radius:10px;
+    background:linear-gradient(180deg,#071827, #0b2838);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.02), 0 8px 18px rgba(2,6,23,0.6);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    position:relative;
+    border:1px solid rgba(255,255,255,0.03);
+  }
+
+  .reel-track{
+    position:absolute;
+    width:100%;
+    top:0;
+    left:0;
+  }
+
+  .symbol{
+    height:160px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:52px;
+    user-select:none;
+  }
+
+  .controls{
+    display:flex;
+    gap:12px;
+    align-items:center;
+    justify-content:space-between;
+    margin-top:6px;
+  }
+  .bets{
+    display:flex;
+    gap:8px;
+    align-items:center;
+  }
+  input[type=number]{
+    width:120px;padding:8px;border-radius:8px;border:0;background:#071827;color:#dff0ff;font-weight:600;
+    box-shadow: inset 0 -4px 20px rgba(0,0,0,0.6);
+  }
+
+  button{
+    border:0;
+    padding:12px 18px;
+    border-radius:10px;
+    background:var(--accent);
+    color:#051725;
+    font-weight:700;
+    cursor:pointer;
+    box-shadow: 0 8px 18px rgba(255,176,32,0.12);
+  }
+  button:active{transform:translateY(1px)}
+  .spin-btn{
+    width:100%;
+    font-size:18px;
+    display:block;
+  }
+
+  .panel{
+    padding:16px;
+    background:linear-gradient(180deg, rgba(255,255,255,0.015), transparent);
+    border-radius:10px;
+  }
+
+  .stats{
+    display:flex;gap:10px;flex-direction:column;
+  }
+  .stat-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;}
+  .big{font-size:20px;font-weight:700}
+  .small{font-size:13px;color:var(--muted)}
+
+  .result{
+    margin-top:10px;
+    font-weight:700;
+    font-size:16px;
+    min-height:24px;
+    color:#cde7ff;
+  }
+
+  footer.note{font-size:12px;color:var(--muted);margin-top:8px}
+
+  /* nice shimmer for winning reels */
+  .win {
+    box-shadow: 0 0 18px rgba(255,200,50,0.18), 0 6px 30px rgba(255,140,20,0.06) !important;
+    transform: scale(1.03);
   }
 </style>
 </head>
 <body>
-  <div class="wrap">
-    <div class="card">
-      <div class="top">
-        <h1>🎰 Roleta de Frutas — Caça-níquel</h1>
-        <div class="status">
-          <div>Saldo: <span id="saldo" class="saldo">R$ 200.00</span></div>
+  <div class="app" role="application" aria-label="Slot game">
+    <div class="game">
+      <div class="header">
+        <div class="title">
+          <div class="logo">RT</div>
+          <div>
+            <div class="h1">Roleta Alternativa</div>
+            <div class="muted">Toque em SPIN — jogo só para diversão</div>
+          </div>
+        </div>
+        <div style="text-align:right">
+          <div class="small">Versão: demo</div>
+          <div class="muted" style="font-size:12px">Sem dinheiro real</div>
         </div>
       </div>
 
-      <div style="margin-top:10px;display:flex;gap:10px;align-items:center;flex-wrap:wrap">
-        <div class="controls">
-          <label style="color:var(--muted);font-size:13px;margin-right:6px">Aposta</label>
-          <input id="input-aposta" type="number" min="1" step="1" value="10" />
-          <button id="btn-spin">Girar 🎰</button>
-          <button id="btn-auto" class="secondary">Auto (0)</button>
+      <div class="reels-wrap" id="reelsWrap" aria-hidden="false">
+        <div class="reel" id="reel0" aria-label="Rolo 1">
+          <div class="reel-track" id="track0"></div>
         </div>
-
-        <div style="margin-left:auto;display:flex;gap:8px;align-items:center">
-          <button id="btn-tabela" class="secondary">Tabela</button>
-          <button id="btn-reset" class="secondary">Reset Saldo</button>
+        <div class="reel" id="reel1" aria-label="Rolo 2">
+          <div class="reel-track" id="track1"></div>
+        </div>
+        <div class="reel" id="reel2" aria-label="Rolo 3">
+          <div class="reel-track" id="track2"></div>
         </div>
       </div>
 
-      <div class="machine">
-        <div class="reels" aria-hidden="false">
-          <div class="reel" id="reel-0">🍒</div>
-          <div class="reel" id="reel-1">🍋</div>
-          <div class="reel" id="reel-2">🍇</div>
+      <div class="controls">
+        <div class="bets">
+          <label class="small" for="bet">Aposta</label>
+          <input id="bet" type="number" min="1" step="1" value="5" aria-label="Valor da aposta" />
+          <button id="minBet">-</button>
+          <button id="maxBet">+</button>
         </div>
-        <div class="pointer"></div>
-
-        <div class="info" style="width:100%;justify-content:space-between">
-          <div class="table" style="flex:1;min-width:220px">
-            <div style="font-weight:700;margin-bottom:6px">Resultado</div>
-            <div id="descricao" style="color:var(--muted)">Aposte e gire — melhores combinações pagam mais.</div>
-          </div>
-
-          <div style="width:320px;max-width:48%">
-            <div style="font-weight:700;margin-bottom:6px">Tabela de Pagamentos</div>
-            <div class="table">
-              <!-- Table rows injected by JS -->
-              <div id="tabela-rows"></div>
-            </div>
-          </div>
-        </div>
-
-        <div style="width:100%;display:flex;gap:12px;flex-wrap:wrap;margin-top:12px">
-          <div style="flex:1;min-width:220px">
-            <div style="font-weight:700;margin-bottom:6px">Histórico (últimas 12)</div>
-            <div id="history" class="history"></div>
-          </div>
-          <div style="width:200px;min-width:180px" class="table">
-            <div style="font-weight:700;margin-bottom:6px">Controles Rápidos</div>
-            <div style="display:flex;flex-direction:column;gap:6px">
-              <button class="secondary" id="btn-add-10">+R$ 10</button>
-              <button class="secondary" id="btn-add-50">+R$ 50</button>
-              <button class="secondary" id="btn-cashout">Sacar</button>
-            </div>
-          </div>
+        <div style="flex:1"></div>
+        <div style="width:220px">
+          <button id="spin" class="spin-btn" aria-live="polite">SPIN</button>
         </div>
       </div>
 
-      <footer>Wild: ⭐ (substitui qualquer fruta). Trinca paga mais; par também paga. Jogue com responsabilidade.</footer>
+      <div class="panel">
+        <div class="stats">
+          <div class="stat-row"><div class="small">Saldo</div><div id="balance" class="big">100</div></div>
+          <div class="stat-row"><div class="small">Último ganho</div><div id="lastWin" class="big">-</div></div>
+          <div class="result" id="resultText" aria-live="polite"></div>
+        </div>
+        <div class="note">Use o botão SPIN. Não é jogo de azar real — apenas diversão.</div>
+      </div>
+    </div>
+
+    <div class="panel" aria-label="Informações">
+      <h3 style="margin-top:0">Regras & Pagamentos</h3>
+      <ul style="padding-left:18px;margin:6px 0;color:var(--muted)">
+        <li>3 iguais — paga 10× a aposta</li>
+        <li>2 iguais — paga 2× a aposta</li>
+        <li>Ícones únicos e imaginários — jogo criado para aprendizado e diversão</li>
+      </ul>
+      <div style="margin-top:12px">
+        <strong>Ícones:</strong>
+        <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap">
+          <!-- legenda dos símbolos -->
+          <div style="display:flex;gap:8px;align-items:center;"><span style="font-size:26px">🍊</span><small class="muted">Laranja</small></div>
+          <div style="display:flex;gap:8px;align-items:center;"><span style="font-size:26px">🍋</span><small class="muted">Limão</small></div>
+          <div style="display:flex;gap:8px;align-items:center;"><span style="font-size:26px">🍒</span><small class="muted">Cereja</small></div>
+          <div style="display:flex;gap:8px;align-items:center;"><span style="font-size:26px">⭐</span><small class="muted">Estrela</small></div>
+          <div style="display:flex;gap:8px;align-items:center;"><span style="font-size:26px">🐯</span><small class="muted">Tigre (icone original)</small></div>
+          <div style="display:flex;gap:8px;align-items:center;"><span style="font-size:26px">🍇</span><small class="muted">Uva</small></div>
+        </div>
+      </div>
+
+      <hr style="border:none;border-top:1px solid rgba(255,255,255,0.03);margin:14px 0" />
+      <div style="font-size:13px;color:var(--muted)">
+        Dica: toque o SPIN com o polegar para jogar no celular. Código aberto — personalize os ícones e pagamentos como quiser.
+      </div>
     </div>
   </div>
 
 <script>
 /*
-  Roleta de Frutas (HTML/JS)
-  - 3 rolos
-  - símbolos com peso (probabilidade), paga3 e paga2
-  - animação de giro com parada sequencial
-  - histórico, saldo, aposta
+  Slot machine demo
+  - 3 reels
+  - Symbols array uses emoji (can replace by inline SVGs)
+  - Physics: each reel will spin with random extra rotations and stop at a symbol index
 */
 
-// ===== CONFIG =====
-const SALDO_INICIAL = 200.0;
-const REELS = 3;
-const FRAMES = 18;         // quantos ciclos de "troca" por rolo antes de parar
-const FRAME_MS = 60;       // velocidade base
-const MAX_HISTORY = 12;
+const symbols = ["🍊","🍋","🍒","⭐","🐯","🍇","🍉","🔔","🍍"]; // 9 symbols
+const reels = 3;
+const symbolHeight = 160; // must match .symbol height in CSS
+let balanceEl = document.getElementById('balance');
+let lastWinEl = document.getElementById('lastWin');
+let resultText = document.getElementById('resultText');
+let betInput = document.getElementById('bet');
+let spinBtn = document.getElementById('spin');
 
-// símbolos (nome, emoji, peso, paga3, paga2). Estrela é wild.
-const SYMBOLS = [
-  {nome:"Cereja",  emoji:"🍒", peso:28, paga3:6,  paga2:2},
-  {nome:"Limão",   emoji:"🍋", peso:24, paga3:8,  paga2:3},
-  {nome:"Uva",     emoji:"🍇", peso:20, paga3:10, paga2:4},
-  {nome:"Melancia",emoji:"🍉", peso:16, paga3:16, paga2:6},
-  {nome:"Sino",    emoji:"🔔", peso:10, paga3:24, paga2:8},
-  {nome:"Diamante",emoji:"💎", peso:6,  paga3:40, paga2:10},
-  {nome:"Estrela*",emoji:"⭐", peso:4,  paga3:60, paga2:12} // wild
-];
+let balance = 100;
+let spinning = false;
+let lastWin = 0;
 
-// ===== estado =====
-let saldo = SALDO_INICIAL;
-let historyArr = [];
-let isSpinning = false;
-let lastBet = 10;
-let autoCount = 0;
-let reelElements = [];
-let tabelaRowsEl = document.getElementById('tabela-rows');
-let historyEl = document.getElementById('history');
-let descricaoEl = document.getElementById('descricao');
-const pesoTotal = SYMBOLS.reduce((s,x) => s + x.peso, 0);
-
-// init UI elements
-const saldoEl = document.getElementById('saldo');
-const inputAposta = document.getElementById('input-aposta');
-const btnSpin = document.getElementById('btn-spin');
-const btnAuto = document.getElementById('btn-auto');
-
-for (let i=0;i<REELS;i++) reelElements.push(document.getElementById('reel-'+i));
-
-// render tabela
-function renderTabela(){
-  tabelaRowsEl.innerHTML = '';
-  SYMBOLS.forEach(s => {
-    const div = document.createElement('div');
-    div.style.display='flex'; div.style.justifyContent='space-between'; div.style.padding='4px 0';
-    div.innerHTML = `<div>${s.emoji} ${s.nome}${s.nome.includes('Estrela')? ' (Wild)':''}</div>
-                     <div style="color:var(--muted)">x${s.paga3} / x${s.paga2}</div>`;
-    tabelaRowsEl.appendChild(div);
-  });
-}
-renderTabela();
-
-// helpers
-function fmtMoney(v){ return 'R$ ' + Number(v).toFixed(2); }
-function updateSaldo(){ saldoEl.textContent = fmtMoney(saldo); }
-function pushHistory(text, win){
-  historyArr.unshift({text,win});
-  if (historyArr.length>MAX_HISTORY) historyArr.pop();
-  renderHistory();
-}
-function renderHistory(){
-  historyEl.innerHTML = '';
-  historyArr.forEach(h=>{
-    const d = document.createElement('div');
-    d.className='row';
-    d.style.justifyContent='space-between';
-    d.innerHTML = `<div style="color:var(--muted);font-size:13px">${h.text}</div>
-                   <div style="font-weight:700;${h.win? 'color:var(--win)':'color:var(--muted)'}">${h.win? '+':'-'}</div>`;
-    historyEl.appendChild(d);
-  });
+function format(n){ return Math.round(n*100)/100; }
+function updateUI(){
+  balanceEl.textContent = format(balance);
+  lastWinEl.textContent = lastWin>0 ? "+"+format(lastWin) : (lastWin===0? '-' : '-' + format(Math.abs(lastWin)));
 }
 
-// sorteio ponderado
-function sorteiaSimbolo(){
-  let r = Math.floor(Math.random()*pesoTotal);
-  let acum = 0;
-  for (const s of SYMBOLS){
-    acum += s.peso;
-    if (r < acum) return s;
-  }
-  return SYMBOLS[SYMBOLS.length-1];
-}
-function isWild(s){ return s.nome.includes('Estrela'); }
+updateUI();
 
-// pagamento (mesma lógica do Java)
-function calcularPagamento(rolos){
-  const [a,b,c] = rolos;
-  const aw=isWild(a), bw=isWild(b), cw=isWild(c);
-
-  function todosIguaisConsiderandoWild(){
-    if (aw && bw && cw) return true;
-    const alvo = !aw? a : (!bw? b : (!cw? c : null));
-    if (!alvo) return true;
-    return (aw || a===alvo) && (bw || b===alvo) && (cw || c===alvo);
-  }
-
-  if (todosIguaisConsiderandoWild()){
-    // escolhe símbolo não-wild com maior paga3 entre os presentes
-    const candidatos = [a,b,c].filter(x=>!isWild(x));
-    let base = candidatos.length ? candidatos.reduce((p,x)=> x.paga3>p.paga3? x:p, candidatos[0]) : SYMBOLS.find(s=>s.nome==='Estrela*');
-    return {mult: base.paga3, desc:`Trinca de ${base.emoji} x${base.paga3}`};
-  }
-
-  // par (considerando 1 wild)
-  let melhor = 0;
-  for (const s of SYMBOLS){
-    if (isWild(s)) continue;
-    let iguais = (a===s?1:0) + (b===s?1:0) + (c===s?1:0);
-    let wilds = (isWild(a)?1:0) + (isWild(b)?1:0) + (isWild(c)?1:0);
-    if (iguais >= 2 || (iguais===1 && wilds>=1)){
-      melhor = Math.max(melhor, s.paga2);
+// Create tracks: each track will contain symbol nodes repeated multiple times to allow smooth scroll
+for(let r=0;r<reels;r++){
+  const track = document.getElementById('track'+r);
+  track.style.transition = 'none';
+  // Fill the track with multiple cycles of symbols to allow long scroll
+  for(let rep=0; rep<6; rep++){
+    for(let s=0;s<symbols.length;s++){
+      const el = document.createElement('div');
+      el.className = 'symbol';
+      el.innerText = symbols[s];
+      track.appendChild(el);
     }
   }
-  let wildCount = (isWild(a)?1:0) + (isWild(b)?1:0) + (isWild(c)?1:0);
-  if (wildCount>=2){
-    const star = SYMBOLS.find(s=>s.nome==='Estrela*');
-    melhor = Math.max(melhor, star.paga2);
-  }
-  if (melhor>0) return {mult: melhor, desc:`Par vencedor x${melhor}${(aw||bw||cw)?' (com ⭐)':''}`};
-  return {mult:0, desc:''};
+  // Clone first symbol at end so loop looks nicer
 }
 
-// animação de giro
-function spinOnce(aposta){
-  if (isSpinning) return;
-  aposta = Number(aposta);
-  if (!aposta || aposta <= 0) return alert('Aposta inválida');
-  if (aposta > saldo) return alert('Saldo insuficiente');
-  isSpinning = true;
-  lastBet = aposta;
-  saldo -= aposta;
-  updateSaldo();
+// Utility to get random integer
+function randInt(min,max){ return Math.floor(Math.random()*(max-min+1))+min }
 
-  descricaoEl.textContent = 'Girando... boa sorte!';
+// Do a spin
+spinBtn.addEventListener('click', async ()=>{
+  if(spinning) return;
+  let bet = Number(betInput.value) || 0;
+  if(bet <= 0){ resultText.textContent = 'Aposta inválida.'; return; }
+  if(bet > balance){ resultText.textContent = 'Saldo insuficiente.'; return; }
+  spinning = true;
+  spinBtn.disabled = true;
+  resultText.textContent = '';
+  balance -= bet;
+  updateUI();
 
-  // para cada rolo: roda FRAMES + offset e para sequencialmente
-  const targets = [];
-  for (let i=0;i<REELS;i++) targets.push( sorteiaSimbolo() );
+  // Choose final symbol indices for each reel
+  const finalIndices = [];
+  for(let r=0;r<reels;r++){
+    finalIndices.push(randInt(0, symbols.length-1));
+  }
 
-  // Arrays de timers
-  const intervals = [];
-  const finalSymbols = [];
+  // For visual fairness, make center symbol the result.
+  // We'll animate each reel with different durations and easing via JS loop.
+  const promises = [];
+  for(let r=0;r<reels;r++){
+    promises.push(spinReel(r, finalIndices[r], 2000 + r*500 + randInt(0,600)));
+  }
 
-  for (let i=0;i<REELS;i++){
-    let frame = 0;
-    intervals[i] = setInterval(()=>{
-      // troca emoji continuamente
-      reelElements[i].textContent = sorteiaSimbolo().emoji;
-      frame++;
-      // quando atingir frames + i*velocidade extra, trava no target
-      if (frame > FRAMES + i*6){
-        clearInterval(intervals[i]);
-        reelElements[i].textContent = targets[i].emoji;
-        finalSymbols[i] = targets[i];
-        // se último rolo, processa resultado
-        if (finalSymbols.filter(Boolean).length === REELS){
-          // calcula pagamento
-          const pagamento = calcularPagamento(finalSymbols);
-          const ganho = aposta * pagamento.mult;
-          if (ganho > 0){
-            saldo += ganho;
-            descricaoEl.innerHTML = `<span style="color:var(--win);font-weight:800">GANHOU ${fmtMoney(ganho)}</span> — ${pagamento.desc}`;
-            pushHistory(`${timeNow()} | Aposta ${fmtMoney(aposta)} -> ${finalSymbols.map(s=>s.emoji).join(' ')} | +${fmtMoney(ganho)}`, true);
-          } else {
-            descricaoEl.innerHTML = `<span style="color:var(--muted);">Sem prêmio — ${finalSymbols.map(s=>s.emoji).join(' ')}</span>`;
-            pushHistory(`${timeNow()} | Aposta ${fmtMoney(aposta)} -> ${finalSymbols.map(s=>s.emoji).join(' ')} | 0`, false);
-          }
-          updateSaldo();
-          isSpinning = false;
-          // auto
-          if (autoCount > 0){
-            autoCount--;
-            btnAuto.textContent = 'Auto ('+autoCount+')';
-            setTimeout(()=>{ if(!isSpinning) spinOnce(lastBet); }, 700);
-          }
-        }
+  // Wait for all to finish
+  await Promise.all(promises);
+
+  // Determine payout
+  // If all three equal
+  const [a,b,c] = finalIndices;
+  let win = 0;
+  if(a===b && b===c){
+    win = bet * 10;
+    resultText.textContent = `Três ${symbols[a]}! Você ganhou ${win} moedas 🎉`;
+    // visual highlight
+    highlightWinningReels([0,1,2]);
+  } else if(a===b || b===c || a===c){
+    win = bet * 2;
+    resultText.textContent = `Dois iguais! Você ganhou ${win} moedas ✨`;
+    // find which reels match
+    const winners = [];
+    if(a===b) winners.push(0,1);
+    if(b===c) winners.push(1,2);
+    if(a===c) winners.push(0,2);
+    highlightWinningReels([...new Set(winners)]);
+  } else {
+    resultText.textContent = 'Que pena — sem combinação. Tente novamente.';
+  }
+
+  balance += win;
+  lastWin = win;
+  updateUI();
+
+  // small pause for UX
+  setTimeout(()=>{ spinning=false; spinBtn.disabled=false; }, 350);
+
+});
+
+// spinReel: animates track to land with center symbol = index
+function spinReel(reelIndex, targetSymbolIndex, durationMs){
+  return new Promise(resolve=>{
+    const track = document.getElementById('track'+reelIndex);
+    // The track currently is multiple repetitions of symbols. We'll move it vertically.
+    // compute how many symbol-steps to spin: base cycles + offset to target
+    // pick a large offset for a longer spin
+    const cycles = randInt(6,9); // how many full cycles
+    const totalSymbols = symbols.length * cycles + targetSymbolIndex;
+    const finalOffset = totalSymbols * symbolHeight;
+
+    // reset transition to none to set starting translate
+    track.style.transition = 'none';
+
+    // compute current translateY (if any)
+    const currentTransform = getComputedStyle(track).transform;
+    let currentY = 0;
+    if(currentTransform && currentTransform !== 'none'){
+      const vals = currentTransform.match(/matrix.*\((.+)\)/)[1].split(', ');
+      currentY = parseFloat(vals[5]);
+    }
+
+    // set start position a little negative so movement feels centered
+    // apply transform directly to allow transition
+    // We'll animate from currentY to -finalOffset (negative because moving up)
+    // For simplicity, set start to 0, set translateY to 0 now
+    track.style.transform = `translateY(${currentY}px)`;
+
+    // Force reflow to ensure styles applied
+    track.getBoundingClientRect();
+
+    // Apply transition for duration with cubic-bezier easing (nice ease-out)
+    track.style.transition = `transform ${durationMs}ms cubic-bezier(0.16, 0.84, 0.26, 1)`;
+    track.style.transform = `translateY(${-finalOffset}px)`;
+
+    // After transition ends, snap the DOM so we don't accumulate huge offsets
+    const cleanup = ()=>{
+      // remove listener
+      track.removeEventListener('transitionend', cleanup);
+      // compute which symbol is at top after finalOffset: modulo symbols.length
+      // We'll set transform to a small value showing the chosen symbol centered:
+      const offsetSymbols = totalSymbols % symbols.length;
+      // rebuild track to a neutral state: set transform to negative (offsetSymbols * symbolHeight)
+      // To avoid jank, temporarily disable transition
+      track.style.transition = 'none';
+      // Build a new shorter track that ensures target symbol is at the first visible position
+      // Clear nodes and add a few symbols around the target for visual continuity
+      track.innerHTML = '';
+      // add 4 symbols above, target, and 4 below (wrap using modulo)
+      const context = 4;
+      for(let i=-context; i<=context; i++){
+        const idx = mod(targetSymbolIndex + i, symbols.length);
+        const el = document.createElement('div');
+        el.className = 'symbol';
+        el.innerText = symbols[idx];
+        track.appendChild(el);
       }
-    }, FRAME_MS + i*6);
-  }
+      // position so that the middle symbol (context index) is visible
+      const newOffset = -context * symbolHeight;
+      track.style.transform = `translateY(${newOffset}px)`;
+      // small timeout to re-enable interactions
+      setTimeout(()=>resolve(),50);
+    };
+
+    // Listen for transition end
+    track.addEventListener('transitionend', cleanup);
+  });
 }
 
-// UI wiring
-updateSaldo();
-inputAposta.value = lastBet;
+function mod(n,m){ return ((n % m) + m) % m; }
 
-btnSpin.addEventListener('click', ()=>{
-  if (isSpinning) return;
-  const aposta = Number(inputAposta.value) || lastBet;
-  spinOnce(aposta);
-});
-document.getElementById('btn-tabela').addEventListener('click', ()=>{
-  alert('Tabela de pagamentos:\\n\\n' + SYMBOLS.map(s=>`${s.emoji} ${s.nome}${s.nome.includes('Estrela')? ' (Wild)':''} — 3 iguais: x${s.paga3}, 2 iguais: x${s.paga2}`).join('\\n'));
-});
-document.getElementById('btn-reset').addEventListener('click', ()=>{
-  if (!confirm('Resetar saldo para o valor inicial?')) return;
-  saldo = SALDO_INICIAL; updateSaldo(); historyArr=[]; renderHistory(); descricaoEl.textContent='Saldo resetado.';
-});
-document.getElementById('btn-add-10').addEventListener('click', ()=>{ saldo+=10; updateSaldo(); });
-document.getElementById('btn-add-50').addEventListener('click', ()=>{ saldo+=50; updateSaldo(); });
-document.getElementById('btn-cashout').addEventListener('click', ()=>{ alert('Você sacou ' + fmtMoney(saldo)); saldo=0; updateSaldo(); });
+// highlight reels indexes (array)
+function highlightWinningReels(indexes){
+  // add class to reel elements for a moment
+  indexes.forEach(i=>{
+    const el = document.getElementById('reel'+i);
+    el.classList.add('win');
+    setTimeout(()=>el.classList.remove('win'), 1400);
+  });
+}
 
-btnAuto.addEventListener('click', ()=>{
-  if (isSpinning) return;
-  const n = prompt('Quantas rodadas automáticas? (digite um número)');
-  const q = parseInt(n);
-  if (!isNaN(q) && q>0){
-    autoCount = q; btnAuto.textContent = 'Auto ('+autoCount+')';
-    // inicia primeiro se possível
-    if (!isSpinning) spinOnce(Number(inputAposta.value) || lastBet);
+/* small helpers for bet buttons */
+document.getElementById('minBet').addEventListener('click', ()=>{
+  let v = Number(betInput.value)||1;
+  v = Math.max(1, Math.floor(v/2));
+  betInput.value = v;
+});
+document.getElementById('maxBet').addEventListener('click', ()=>{
+  let v = Number(betInput.value)||1;
+  v = Math.min(9999, Math.floor(v*2));
+  betInput.value = v;
+});
+
+// Accessibility: allow Enter to spin
+betInput.addEventListener('keydown', (e)=>{ if(e.key === 'Enter'){ spinBtn.click(); } });
+
+// Initialize simple static tracks for first view (so the reels look filled before spin)
+(function initTracks(){
+  for(let r=0;r<reels;r++){
+    const track = document.getElementById('track'+r);
+    // ensure it shows first symbols centered
+    track.innerHTML = '';
+    const context = 4;
+    for(let i=-context;i<=context;i++){
+      const idx = mod(i, symbols.length);
+      const el = document.createElement('div');
+      el.className = 'symbol';
+      el.innerText = symbols[idx];
+      track.appendChild(el);
+    }
+    // position so that center symbol is visible
+    track.style.transform = `translateY(${-context*symbolHeight}px)`;
   }
-});
-
-function timeNow(){ const d=new Date(); return d.toLocaleTimeString(); }
-
-// atalhos teclado: Espaço gira
-window.addEventListener('keydown', (e)=>{
-  if (e.code === 'Space'){ e.preventDefault(); btnSpin.click(); }
-});
-
-// dica UX: toque no número para aumentar
-inputAposta.addEventListener('focus', ()=> inputAposta.select());
-
-// toque rápido: double tap reels to force show a symbol (dev)
-reelElements.forEach(r => r.addEventListener('dblclick', ()=>{ if (!isSpinning) r.textContent = sorteiaSimbolo().emoji; }));
-
+})();
 </script>
 </body>
 </html>
