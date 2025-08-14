@@ -1,136 +1,343 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
-
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Alessio's Pizzaria</title>
-  <link rel="stylesheet" href="style.css">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Roleta de Frutas — Caça-níquel</title>
+<style>
+  :root{
+    --bg:#0f1724; --card:#0b1220; --accent:#f59e0b; --muted:#94a3b8;
+    --win:#10b981; --lose:#ef4444; --glass: rgba(255,255,255,0.03);
+    font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  }
+  html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#071023 80%); color:#e6eef8}
+  .wrap{max-width:900px;margin:28px auto;padding:20px;}
+  .card{background:linear-gradient(180deg,var(--card), #06131f); border-radius:12px; padding:18px; box-shadow:0 8px 24px rgba(2,6,23,0.6);}
+  h1{margin:0 0 8px;font-size:20px;display:flex;align-items:center;gap:10px}
+  .top{display:flex;gap:12px;flex-wrap:wrap;align-items:center;justify-content:space-between}
+  .controls{display:flex;gap:8px;align-items:center}
+  input[type=number]{width:110px;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:var(--glass);color:inherit}
+  button{padding:10px 14px;border-radius:10px;border:none;background:var(--accent);color:#04111a;font-weight:700;cursor:pointer}
+  button.secondary{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted);font-weight:600}
+  .status{display:flex;gap:12px;align-items:center}
+  .saldo{font-weight:800;color:#c7f2e6}
+  .machine{display:flex;flex-direction:column;align-items:center;margin-top:18px}
+  .reels{display:flex;gap:14px;padding:14px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:12px}
+  .reel{width:110px;height:110px;border-radius:10px;background:#071628;display:flex;align-items:center;justify-content:center;font-size:44px;box-shadow:inset 0 -6px 18px rgba(0,0,0,0.6)}
+  .pointer{margin-top:10px;height:10px;width:220px;background:linear-gradient(90deg,transparent,#e2d7d7,transparent);border-radius:4px}
+  .info{display:flex;gap:14px;margin-top:14px;flex-wrap:wrap;align-items:center}
+  .table{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:12px;border-radius:10px;color:var(--muted)}
+  .history{max-height:160px;overflow:auto;padding:10px;background:rgba(255,255,255,0.02);border-radius:8px;margin-top:12px}
+  .row{display:flex;gap:10px;align-items:center;justify-content:space-between;margin-bottom:6px}
+  .result-win{color:var(--win);font-weight:700}
+  .result-lose{color:var(--lose);font-weight:700}
+  footer{margin-top:16px;color:var(--muted);font-size:13px}
+  @media (max-width:520px){
+    .reel{width:80px;height:80px;font-size:34px}
+    input[type=number]{width:86px}
+  }
+</style>
 </head>
-
 <body>
-  <header>
-    <nav>
-      <ul>
-        <li><a href="#home">Home</a></li>
-        <li><a href="#menu">Cardápio</a></li>
-        <li><a href="#about">Sobre Nós</a></li>
-        <li><a href="#contact">Contato</a></li>
-      </ul>
-    </nav>
-  </header>
+  <div class="wrap">
+    <div class="card">
+      <div class="top">
+        <h1>🎰 Roleta de Frutas — Caça-níquel</h1>
+        <div class="status">
+          <div>Saldo: <span id="saldo" class="saldo">R$ 200.00</span></div>
+        </div>
+      </div>
 
-  <section id="home">
-    <div class="hero">
-      <h1>Bem-vindo à Alessio's</h1>
-      <p>Saborosas pizzas feitas especialmente para você!</p>
-      <a href="#menu" class="cta-button">Ver Cardápio</a>
+      <div style="margin-top:10px;display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+        <div class="controls">
+          <label style="color:var(--muted);font-size:13px;margin-right:6px">Aposta</label>
+          <input id="input-aposta" type="number" min="1" step="1" value="10" />
+          <button id="btn-spin">Girar 🎰</button>
+          <button id="btn-auto" class="secondary">Auto (0)</button>
+        </div>
+
+        <div style="margin-left:auto;display:flex;gap:8px;align-items:center">
+          <button id="btn-tabela" class="secondary">Tabela</button>
+          <button id="btn-reset" class="secondary">Reset Saldo</button>
+        </div>
+      </div>
+
+      <div class="machine">
+        <div class="reels" aria-hidden="false">
+          <div class="reel" id="reel-0">🍒</div>
+          <div class="reel" id="reel-1">🍋</div>
+          <div class="reel" id="reel-2">🍇</div>
+        </div>
+        <div class="pointer"></div>
+
+        <div class="info" style="width:100%;justify-content:space-between">
+          <div class="table" style="flex:1;min-width:220px">
+            <div style="font-weight:700;margin-bottom:6px">Resultado</div>
+            <div id="descricao" style="color:var(--muted)">Aposte e gire — melhores combinações pagam mais.</div>
+          </div>
+
+          <div style="width:320px;max-width:48%">
+            <div style="font-weight:700;margin-bottom:6px">Tabela de Pagamentos</div>
+            <div class="table">
+              <!-- Table rows injected by JS -->
+              <div id="tabela-rows"></div>
+            </div>
+          </div>
+        </div>
+
+        <div style="width:100%;display:flex;gap:12px;flex-wrap:wrap;margin-top:12px">
+          <div style="flex:1;min-width:220px">
+            <div style="font-weight:700;margin-bottom:6px">Histórico (últimas 12)</div>
+            <div id="history" class="history"></div>
+          </div>
+          <div style="width:200px;min-width:180px" class="table">
+            <div style="font-weight:700;margin-bottom:6px">Controles Rápidos</div>
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <button class="secondary" id="btn-add-10">+R$ 10</button>
+              <button class="secondary" id="btn-add-50">+R$ 50</button>
+              <button class="secondary" id="btn-cashout">Sacar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>Wild: ⭐ (substitui qualquer fruta). Trinca paga mais; par também paga. Jogue com responsabilidade.</footer>
     </div>
-  </section>
+  </div>
 
-  <section id="menu">
-    <h2>Cardápio</h2>
-    <ul class="menu-list">
-      <li>
-        <img src="img/pexels-engin-akyurt-2260208.jpg" alt="Pizza Margherita">
-        <h3>Pizza Margherita</h3>
-        <p>Molho de tomate, mussarela, manjericão fresco.</p>
-      </li>
-      <li>
-        <img src="img/pexels-engin-akyurt-2260208.jpg" alt="Pizza Pepperoni">
-        <h3>Pizza Pepperoni</h3>
-        <p>Molho de tomate, pepperoni, queijo mussarela.</p>
-      </li>
-      <li>
-        <img src="img/pexels-engin-akyurt-2260208.jpg" alt="Pizza Quatro Queijos">
-        <h3>Pizza Quatro Queijos</h3>
-        <p>Molho de tomate, mussarela, parmesão, gorgonzola, provolone.</p>
-      </li>
-      <li>
-        <img src="img/pexels-engin-akyurt-2260208.jpg" alt="Pizza Calabresa">
-        <h3>Pizza Calabresa</h3>
-        <p>Molho de tomate, calabresa, cebola, queijo mussarela.</p>
-      </li>
-      <li>
-        <img src="img/pexels-engin-akyurt-2260208.jpg" alt="Pizza Vegetariana">
-        <h3>Pizza Vegetariana</h3>
-        <p>Molho de tomate, pimentões, cogumelos, azeitonas, queijo mussarela.</p>
-      </li>
-      <li>
-        <img src="img/pexels-engin-akyurt-2260208.jpg" alt="Pizza Frango com Catupiry">
-        <h3>Pizza Frango com Catupiry</h3>
-        <p>Molho de tomate, frango desfiado, catupiry, milho, queijo mussarela.</p>
-      </li>
-      <li>
-        <img src="img/pexels-engin-akyurt-2260208.jpg" alt="Pizza Portuguesa">
-        <h3>Pizza Portuguesa</h3>
-        <p>Molho de tomate, presunto, ovos, cebola, azeitonas, queijo mussarela.</p>
-      </li>
-      <li>
-        <img src="img/pexels-engin-akyurt-2260208.jpg" alt="Pizza Supreme">
-        <h3>Pizza Supreme</h3>
-        <p>Molho de tomate, pepperoni, pimentões, cebola roxa, azeitonas, queijo mussarela.</p>
-      </li>
-      <li>
-        <img src="img/pexels-engin-akyurt-2260208.jpg" alt="Pizza Tropical">
-        <h3>Pizza Tropical</h3>
-        <p>Molho de tomate, presunto, abacaxi, queijo mussarela.</p>
-      </li>
-      <li>
-        <img src="img/pexels-engin-akyurt-2260208.jpg" alt="Pizza Margherita Especial">
-        <h3>Pizza Margherita Especial</h3>
-        <p>Molho de tomate, mussarela de búfala, tomate fresco, manjericão, azeite de oliva.</p>
-      </li>
-      <li>
-        <img src="img/pexels-engin-akyurt-2260208.jpg" alt="Pizza Carne de Sol">
-        <h3>Pizza Carne de Sol</h3>
-        <p>Molho de tomate, carne de sol desfiada, cebola roxa, queijo mussarela.</p>
-      </li>
-      <li>
-        <img src="img/pexels-engin-akyurt-2260208.jpg" alt="Pizza Caprese">
-        <h3>Pizza Caprese</h3>
-        <p>Molho de tomate, tomate fresco, mussarela de búfala, manjericão, azeite de oliva.</p>
-      </li>
-    </ul>
-  </section>
+<script>
+/*
+  Roleta de Frutas (HTML/JS)
+  - 3 rolos
+  - símbolos com peso (probabilidade), paga3 e paga2
+  - animação de giro com parada sequencial
+  - histórico, saldo, aposta
+*/
 
-  <section id="about">
-    <h2>Sobre Nós</h2>
-    <p>Nossa pizzaria é dedicada a criar as melhores pizzas do mundo, com ingredientes frescos e receitas exclusivas.
-    </p>
-  </section>
+// ===== CONFIG =====
+const SALDO_INICIAL = 200.0;
+const REELS = 3;
+const FRAMES = 18;         // quantos ciclos de "troca" por rolo antes de parar
+const FRAME_MS = 60;       // velocidade base
+const MAX_HISTORY = 12;
 
-  <section id="contact">
-    <h2>Contato</h2>
+// símbolos (nome, emoji, peso, paga3, paga2). Estrela é wild.
+const SYMBOLS = [
+  {nome:"Cereja",  emoji:"🍒", peso:28, paga3:6,  paga2:2},
+  {nome:"Limão",   emoji:"🍋", peso:24, paga3:8,  paga2:3},
+  {nome:"Uva",     emoji:"🍇", peso:20, paga3:10, paga2:4},
+  {nome:"Melancia",emoji:"🍉", peso:16, paga3:16, paga2:6},
+  {nome:"Sino",    emoji:"🔔", peso:10, paga3:24, paga2:8},
+  {nome:"Diamante",emoji:"💎", peso:6,  paga3:40, paga2:10},
+  {nome:"Estrela*",emoji:"⭐", peso:4,  paga3:60, paga2:12} // wild
+];
 
-    <p>Entre em contato conosco para fazer pedidos ou tirar suas dúvidas.</p>
+// ===== estado =====
+let saldo = SALDO_INICIAL;
+let historyArr = [];
+let isSpinning = false;
+let lastBet = 10;
+let autoCount = 0;
+let reelElements = [];
+let tabelaRowsEl = document.getElementById('tabela-rows');
+let historyEl = document.getElementById('history');
+let descricaoEl = document.getElementById('descricao');
+const pesoTotal = SYMBOLS.reduce((s,x) => s + x.peso, 0);
 
-    <address>
-      <p>
-        <strong>Endereço:</strong>
-        Avenida Onze de Outubro, nº 123<br>
-        Centro, Cidade Qualquer/RJ CEP: 12345-678
-      </p>
+// init UI elements
+const saldoEl = document.getElementById('saldo');
+const inputAposta = document.getElementById('input-aposta');
+const btnSpin = document.getElementById('btn-spin');
+const btnAuto = document.getElementById('btn-auto');
 
-      <div>
-        <p><strong>Telefone:</strong> (11) 5555-5555</p>
-        <p>
-          <strong>E-mail:</strong>
-          <a href="mailto:contato@alessios.pizza">contato@alessios.pizza</a>
-        </p>
-      </div>
+for (let i=0;i<REELS;i++) reelElements.push(document.getElementById('reel-'+i));
 
-      <div>
-        <p><strong>Horário de Funcionamento:</strong></p>
-        <p>Segunda a Sábado: 11h00 às 23h00 - Domingo: 16h00 às 23h00</p>
-        <p></p>
-      </div>
-    </address>
-  </section>
+// render tabela
+function renderTabela(){
+  tabelaRowsEl.innerHTML = '';
+  SYMBOLS.forEach(s => {
+    const div = document.createElement('div');
+    div.style.display='flex'; div.style.justifyContent='space-between'; div.style.padding='4px 0';
+    div.innerHTML = `<div>${s.emoji} ${s.nome}${s.nome.includes('Estrela')? ' (Wild)':''}</div>
+                     <div style="color:var(--muted)">x${s.paga3} / x${s.paga2}</div>`;
+    tabelaRowsEl.appendChild(div);
+  });
+}
+renderTabela();
 
-  <footer>
-    <p>&copy; 2024 Alessio's Pizzaria</p>
-  </footer>
+// helpers
+function fmtMoney(v){ return 'R$ ' + Number(v).toFixed(2); }
+function updateSaldo(){ saldoEl.textContent = fmtMoney(saldo); }
+function pushHistory(text, win){
+  historyArr.unshift({text,win});
+  if (historyArr.length>MAX_HISTORY) historyArr.pop();
+  renderHistory();
+}
+function renderHistory(){
+  historyEl.innerHTML = '';
+  historyArr.forEach(h=>{
+    const d = document.createElement('div');
+    d.className='row';
+    d.style.justifyContent='space-between';
+    d.innerHTML = `<div style="color:var(--muted);font-size:13px">${h.text}</div>
+                   <div style="font-weight:700;${h.win? 'color:var(--win)':'color:var(--muted)'}">${h.win? '+':'-'}</div>`;
+    historyEl.appendChild(d);
+  });
+}
+
+// sorteio ponderado
+function sorteiaSimbolo(){
+  let r = Math.floor(Math.random()*pesoTotal);
+  let acum = 0;
+  for (const s of SYMBOLS){
+    acum += s.peso;
+    if (r < acum) return s;
+  }
+  return SYMBOLS[SYMBOLS.length-1];
+}
+function isWild(s){ return s.nome.includes('Estrela'); }
+
+// pagamento (mesma lógica do Java)
+function calcularPagamento(rolos){
+  const [a,b,c] = rolos;
+  const aw=isWild(a), bw=isWild(b), cw=isWild(c);
+
+  function todosIguaisConsiderandoWild(){
+    if (aw && bw && cw) return true;
+    const alvo = !aw? a : (!bw? b : (!cw? c : null));
+    if (!alvo) return true;
+    return (aw || a===alvo) && (bw || b===alvo) && (cw || c===alvo);
+  }
+
+  if (todosIguaisConsiderandoWild()){
+    // escolhe símbolo não-wild com maior paga3 entre os presentes
+    const candidatos = [a,b,c].filter(x=>!isWild(x));
+    let base = candidatos.length ? candidatos.reduce((p,x)=> x.paga3>p.paga3? x:p, candidatos[0]) : SYMBOLS.find(s=>s.nome==='Estrela*');
+    return {mult: base.paga3, desc:`Trinca de ${base.emoji} x${base.paga3}`};
+  }
+
+  // par (considerando 1 wild)
+  let melhor = 0;
+  for (const s of SYMBOLS){
+    if (isWild(s)) continue;
+    let iguais = (a===s?1:0) + (b===s?1:0) + (c===s?1:0);
+    let wilds = (isWild(a)?1:0) + (isWild(b)?1:0) + (isWild(c)?1:0);
+    if (iguais >= 2 || (iguais===1 && wilds>=1)){
+      melhor = Math.max(melhor, s.paga2);
+    }
+  }
+  let wildCount = (isWild(a)?1:0) + (isWild(b)?1:0) + (isWild(c)?1:0);
+  if (wildCount>=2){
+    const star = SYMBOLS.find(s=>s.nome==='Estrela*');
+    melhor = Math.max(melhor, star.paga2);
+  }
+  if (melhor>0) return {mult: melhor, desc:`Par vencedor x${melhor}${(aw||bw||cw)?' (com ⭐)':''}`};
+  return {mult:0, desc:''};
+}
+
+// animação de giro
+function spinOnce(aposta){
+  if (isSpinning) return;
+  aposta = Number(aposta);
+  if (!aposta || aposta <= 0) return alert('Aposta inválida');
+  if (aposta > saldo) return alert('Saldo insuficiente');
+  isSpinning = true;
+  lastBet = aposta;
+  saldo -= aposta;
+  updateSaldo();
+
+  descricaoEl.textContent = 'Girando... boa sorte!';
+
+  // para cada rolo: roda FRAMES + offset e para sequencialmente
+  const targets = [];
+  for (let i=0;i<REELS;i++) targets.push( sorteiaSimbolo() );
+
+  // Arrays de timers
+  const intervals = [];
+  const finalSymbols = [];
+
+  for (let i=0;i<REELS;i++){
+    let frame = 0;
+    intervals[i] = setInterval(()=>{
+      // troca emoji continuamente
+      reelElements[i].textContent = sorteiaSimbolo().emoji;
+      frame++;
+      // quando atingir frames + i*velocidade extra, trava no target
+      if (frame > FRAMES + i*6){
+        clearInterval(intervals[i]);
+        reelElements[i].textContent = targets[i].emoji;
+        finalSymbols[i] = targets[i];
+        // se último rolo, processa resultado
+        if (finalSymbols.filter(Boolean).length === REELS){
+          // calcula pagamento
+          const pagamento = calcularPagamento(finalSymbols);
+          const ganho = aposta * pagamento.mult;
+          if (ganho > 0){
+            saldo += ganho;
+            descricaoEl.innerHTML = `<span style="color:var(--win);font-weight:800">GANHOU ${fmtMoney(ganho)}</span> — ${pagamento.desc}`;
+            pushHistory(`${timeNow()} | Aposta ${fmtMoney(aposta)} -> ${finalSymbols.map(s=>s.emoji).join(' ')} | +${fmtMoney(ganho)}`, true);
+          } else {
+            descricaoEl.innerHTML = `<span style="color:var(--muted);">Sem prêmio — ${finalSymbols.map(s=>s.emoji).join(' ')}</span>`;
+            pushHistory(`${timeNow()} | Aposta ${fmtMoney(aposta)} -> ${finalSymbols.map(s=>s.emoji).join(' ')} | 0`, false);
+          }
+          updateSaldo();
+          isSpinning = false;
+          // auto
+          if (autoCount > 0){
+            autoCount--;
+            btnAuto.textContent = 'Auto ('+autoCount+')';
+            setTimeout(()=>{ if(!isSpinning) spinOnce(lastBet); }, 700);
+          }
+        }
+      }
+    }, FRAME_MS + i*6);
+  }
+}
+
+// UI wiring
+updateSaldo();
+inputAposta.value = lastBet;
+
+btnSpin.addEventListener('click', ()=>{
+  if (isSpinning) return;
+  const aposta = Number(inputAposta.value) || lastBet;
+  spinOnce(aposta);
+});
+document.getElementById('btn-tabela').addEventListener('click', ()=>{
+  alert('Tabela de pagamentos:\\n\\n' + SYMBOLS.map(s=>`${s.emoji} ${s.nome}${s.nome.includes('Estrela')? ' (Wild)':''} — 3 iguais: x${s.paga3}, 2 iguais: x${s.paga2}`).join('\\n'));
+});
+document.getElementById('btn-reset').addEventListener('click', ()=>{
+  if (!confirm('Resetar saldo para o valor inicial?')) return;
+  saldo = SALDO_INICIAL; updateSaldo(); historyArr=[]; renderHistory(); descricaoEl.textContent='Saldo resetado.';
+});
+document.getElementById('btn-add-10').addEventListener('click', ()=>{ saldo+=10; updateSaldo(); });
+document.getElementById('btn-add-50').addEventListener('click', ()=>{ saldo+=50; updateSaldo(); });
+document.getElementById('btn-cashout').addEventListener('click', ()=>{ alert('Você sacou ' + fmtMoney(saldo)); saldo=0; updateSaldo(); });
+
+btnAuto.addEventListener('click', ()=>{
+  if (isSpinning) return;
+  const n = prompt('Quantas rodadas automáticas? (digite um número)');
+  const q = parseInt(n);
+  if (!isNaN(q) && q>0){
+    autoCount = q; btnAuto.textContent = 'Auto ('+autoCount+')';
+    // inicia primeiro se possível
+    if (!isSpinning) spinOnce(Number(inputAposta.value) || lastBet);
+  }
+});
+
+function timeNow(){ const d=new Date(); return d.toLocaleTimeString(); }
+
+// atalhos teclado: Espaço gira
+window.addEventListener('keydown', (e)=>{
+  if (e.code === 'Space'){ e.preventDefault(); btnSpin.click(); }
+});
+
+// dica UX: toque no número para aumentar
+inputAposta.addEventListener('focus', ()=> inputAposta.select());
+
+// toque rápido: double tap reels to force show a symbol (dev)
+reelElements.forEach(r => r.addEventListener('dblclick', ()=>{ if (!isSpinning) r.textContent = sorteiaSimbolo().emoji; }));
+
+</script>
 </body>
-
 </html>
