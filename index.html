@@ -1,41 +1,41 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Roleta Mobile Completa</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ultra Tigrinho Premium</title>
 <style>
 :root{
   --bg1:#061226; --bg2:#08243a; --glass:rgba(255,255,255,.03);
-  --muted:#97a9b9; --accent:#ffd86b; --accent2:#ff7b7b;
+  --accent:#ffd86b; --accent2:#ff7b7b;
   font-family: Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial;
 }
 *{box-sizing:border-box;touch-action: manipulation;}
-html,body{height:100%;margin:0;overflow:hidden}
-body{background:linear-gradient(180deg,var(--bg1),var(--bg2));color:#eaf6ff;display:flex;align-items:center;justify-content:center;padding:4px}
-.app{width:100%;max-width:1000px;display:grid;grid-template-columns:240px 1fr 260px;gap:6px}
+html,body{margin:0;padding:0;height:100%;overflow:hidden;}
+body{background:linear-gradient(180deg,var(--bg1),var(--bg2));color:#eaf6ff;display:flex;justify-content:center;align-items:center;}
+.app{display:grid;grid-template-columns:240px 1fr 260px;gap:6px;width:100%;max-width:1000px;}
 @media(max-width:768px){.app{grid-template-columns:1fr;grid-template-rows:auto auto auto}}
-.card{border-radius:12px;padding:12px;background:linear-gradient(180deg,rgba(255,255,255,.012),transparent);box-shadow:0 12px 36px rgba(0,0,0,.5)}
-.left,.right,.center{display:flex;flex-direction:column;gap:6px}
-.mascot-wrap{width:160px;height:160px;display:flex;align-items:center;justify-content:center;margin:auto}
-#mascot{width:130px;height:130px;transform-origin:center}
-.mascot-cheer{animation:cheer .9s ease forwards}
-@keyframes cheer{0%{transform:translateY(0) scale(1)}30%{transform:translateY(-10px) scale(1.06) rotate(-2deg)}60%{transform:translateY(0) scale(1.03) rotate(2deg)}100%{transform:translateY(-6px) scale(1.04)}}
-.meter{display:grid;grid-template-columns:repeat(6,28px);gap:4px;justify-content:center}
-.cell{width:28px;height:28px;border-radius:6px;background:var(--glass);border:1px solid rgba(255,255,255,.06);transition:transform .2s,box-shadow .2s,background .2s}
-.cell.on{background:linear-gradient(180deg,rgba(255,210,110,.2),rgba(255,150,50,.08));box-shadow:0 10px 26px rgba(255,165,50,.12);transform:translateY(-4px) scale(1.05)}
-.center{align-items:center}
-.reels{display:flex;gap:4px;align-items:center;justify-content:center;width:100%}
-.reel{width:90px;height:140px;overflow:hidden;border-radius:12px;position:relative;background:linear-gradient(180deg,#081a2a,#06283a);border:1px solid rgba(255,255,255,.06);box-shadow:inset 0 6px 16px rgba(0,0,0,.5)}
-.viewport{position:absolute;left:0;top:0;width:100%;height:100%;will-change:transform}
-.slot{height:140px;display:flex;align-items:center;justify-content:center;font-size:38px;user-select:none}
-.reel.spin .viewport{filter:blur(2px) saturate(1.05)}
-.controls{display:flex;gap:4px;align-items:center;width:100%;flex-wrap:wrap;justify-content:center}
-input[type=number]{width:60px;padding:6px;border-radius:10px;border:0;background:#071827;color:#dff6ff;font-weight:700;text-align:center}
-.btn{background:linear-gradient(180deg,var(--accent),var(--accent2));color:#061226;border:0;border-radius:10px;padding:10px 12px;font-weight:800;cursor:pointer;font-size:14px}
-.btn:active{transform:translateY(1px)}
-#fx{position:fixed;left:0;top:0;pointer-events:none;z-index:1000}
-.app.shake{animation:shake .7s ease}
+.card{border-radius:12px;padding:12px;background:linear-gradient(180deg,rgba(255,255,255,.012),transparent);box-shadow:0 12px 36px rgba(0,0,0,.5);}
+.left,.right,.center{display:flex;flex-direction:column;gap:6px;}
+.mascot-wrap{width:160px;height:160px;display:flex;justify-content:center;align-items:center;margin:auto;}
+#mascot{width:130px;height:130px;transform-origin:center;transition:0.2s;}
+.mascot-cheer{animation:cheer 0.9s ease forwards;}
+@keyframes cheer{0%{transform:translateY(0) scale(1)}30%{transform:translateY(-10px) scale(1.08) rotate(-2deg)}60%{transform:translateY(0) scale(1.04) rotate(2deg)}100%{transform:translateY(-6px) scale(1.06)}}
+.meter{display:grid;grid-template-columns:repeat(6,28px);gap:4px;justify-content:center;}
+.cell{width:28px;height:28px;border-radius:6px;background:var(--glass);border:1px solid rgba(255,255,255,.06);transition:0.2s;}
+.cell.on{background:linear-gradient(180deg,rgba(255,210,110,.4),rgba(255,150,50,.2));box-shadow:0 10px 26px rgba(255,165,50,.12);transform:translateY(-4px) scale(1.05);}
+.center{align-items:center;}
+.reels{display:flex;gap:4px;align-items:center;justify-content:center;width:100%;}
+.reel{width:90px;height:140px;overflow:hidden;border-radius:12px;position:relative;background:linear-gradient(180deg,#081a2a,#06283a);border:1px solid rgba(255,255,255,.06);box-shadow:inset 0 6px 16px rgba(0,0,0,.5);}
+.viewport{position:absolute;left:0;top:0;width:100%;height:100%;will-change:transform;}
+.slot{height:140px;display:flex;align-items:center;justify-content:center;font-size:38px;user-select:none;filter:drop-shadow(0 0 3px #ffd86b);}
+.reel.spin .viewport{filter:blur(2px) saturate(1.05);}
+.controls{display:flex;gap:4px;align-items:center;width:100%;flex-wrap:wrap;justify-content:center;}
+input[type=number]{width:60px;padding:6px;border-radius:10px;border:0;background:#071827;color:#dff6ff;font-weight:700;text-align:center;}
+.btn{background:linear-gradient(180deg,var(--accent),var(--accent2));color:#061226;border:0;border-radius:10px;padding:10px 12px;font-weight:800;cursor:pointer;font-size:14px;}
+.btn:active{transform:translateY(1px);}
+#fx{position:fixed;left:0;top:0;pointer-events:none;z-index:1000;}
+.app.shake{animation:shake .7s ease;}
 @keyframes shake{0%{transform:translateY(0)}30%{transform:translateY(-6px)}60%{transform:translateY(2px)}100%{transform:translateY(0)}}
 </style>
 </head>
@@ -75,6 +75,8 @@ input[type=number]{width:60px;padding:6px;border-radius:10px;border:0;background
       <button id="spin" class="btn" style="flex:1">SPIN</button>
     </div>
     <div style="text-align:center;margin-top:6px;font-weight:700" id="result">—</div>
+    <audio id="spinSound"><source src="data:audio/wav;base64,UklGRhYAAABXQVZFZm10IBAAAAABAAEAIlYAAESsAAACABAAZGF0YaYAAAAA" type="audio/wav"></audio>
+    <audio id="winSound"><source src="data:audio/wav;base64,UklGRiIAAABXQVZFZm10IBAAAAABAAEAIlYAAESsAAACABAAZGF0YfYAAAAA" type="audio/wav"></audio>
   </div>
 </div>
 <script>
@@ -89,10 +91,23 @@ const meterEl=document.getElementById('meter');
 const meterCount=document.getElementById('meterCount');
 const resultEl=document.getElementById('result');
 const mascot=document.getElementById('mascot');
-const canvas=document.getElementById('fx');const ctx=canvas.getContext('2d');canvas.width=innerWidth;canvas.height=innerHeight;window.addEventListener('resize',()=>{canvas.width=innerWidth;canvas.height=innerHeight;});
+const spinSound=document.getElementById('spinSound');
+const winSound=document.getElementById('winSound');
+const canvas=document.getElementById('fx');const ctx=canvas.getContext('2d');
+canvas.width=innerWidth;canvas.height=innerHeight;window.addEventListener('resize',()=>{canvas.width=innerWidth;canvas.height=innerHeight;});
 const parts=[];
-function emit(x,y,n){for(let i=0;i<n;i++){parts.push({x,y,vx:(Math.random()-0.5)*6,vy:-Math.random()*6-2,life:60+Math.random()*40,size:5+Math.random()*5,color:['#ffd86b','#ff9c9c','#9ae6b4','#9ac8ff'][Math.floor(Math.random()*4)]})}}
-function step(){ctx.clearRect(0,0,canvas.width,canvas.height);for(let i=parts.length-1;i>=0;i--){const p=parts[i];p.x+=p.vx;p.y+=p.vy;p.vy+=0.3;p.life--;if(p.life<=0||p.y>canvas.height+50){parts.splice(i,1);continue;}ctx.globalAlpha=Math.max(0,p.life/100);ctx.fillStyle=p.color;ctx.fillRect(p.x,p.y,p.size,p.size);};requestAnimationFrame(step);}requestAnimationFrame(step);
+
+function emit(x,y,n){
+for(let i=0;i<n;i++){
+parts.push({x,y,vx:(Math.random()-0.5)*6,vy:-Math.random()*6-2,life:60+Math.random()*40,size:5+Math.random()*5,color:['#ffd86b','#ff9c9c','#9ae6b4','#9ac8ff'][Math.floor(Math.random()*4)]});
+}}
+
+function step(){
+ctx.clearRect(0,0,canvas.width,canvas.height);
+for(let i=parts.length-1;i>=0;i--){
+const p=parts[i];p.x+=p.vx;p.y+=p.vy;p.vy+=0.3;p.life--;if(p.life<=0||p.y>canvas.height+50){parts.splice(i,1);continue;}ctx.globalAlpha=Math.max(0,p.life/100);ctx.fillStyle=p.color;ctx.fillRect(p.x,p.y,p.size,p.size);}
+requestAnimationFrame(step);}
+requestAnimationFrame(step);
 
 function buildMeter(){meterEl.innerHTML='';for(let i=0;i<12;i++){const d=document.createElement('div');d.className='cell';if(i<meter)d.classList.add('on');meterEl.appendChild(d);}meterCount.textContent=meter;}
 function buildTracks(){for(let r=0;r<REELS;r++){const c=vp[r];c.innerHTML='';for(let k=0;k<REPEAT;k++){for(let s=0;s<SYMBOLS.length;s++){const el=document.createElement('div');el.className='slot';el.style.height=VIEW+'px';el.textContent=SYMBOLS[s];c.appendChild(el);}}c.style.transform='translateY('+(-VIEW)+'px)';}}
@@ -100,15 +115,21 @@ function rand(a,b){return Math.floor(Math.random()*(b-a+1))+a;}
 function spinReel(idx,final){return new Promise(res=>{const c=vp[idx];const y0=-VIEW;const y1=y0-(REPEAT*SYMBOLS.length+final)*VIEW;const dur=1200+idx*350;const t0=performance.now();function frame(t){const p=Math.min(1,(t-t0)/dur);const e=1-Math.pow(1-p,4);c.style.transform='translateY('+(y0+(y1-y0)*e)+'px)';if(p<1)requestAnimationFrame(frame);else res();}requestAnimationFrame(frame);});}
 function pick(){return rand(0,SYMBOLS.length-1);}
 async function spin(){
-if(spinning)return;spinning=true;resultEl.textContent='Girando...';const bet=Math.max(1,+betEl.value||1);balance-=bet;buildMeter();
+if(spinning)return;spinning=true;
+spinSound.currentTime=0;spinSound.play().catch(()=>{});
+resultEl.textContent='Girando...';const bet=Math.max(1,+betEl.value||1);balance-=bet;buildMeter();
 const finals=[pick(),pick(),pick()];const tasks=[];for(let r=0;r<REELS;r++)tasks.push(spinReel(r,finals[r]));await Promise.all(tasks);
 const ids=finals;let win=0;if(ids[0]===ids[1]&&ids[1]===ids[2])win=bet*10;
-if(win>0){balance+=win;meter=Math.min(12,meter+1);resultEl.textContent='Ganhou '+win;emit(innerWidth/2,innerHeight/4,80);mascot.classList.remove('mascot-cheer');void mascot.offsetWidth;mascot.classList.add('mascot-cheer');}else resultEl.textContent='Sem combinação';buildMeter();spinning=false;}
+if(win>0){balance+=win;meter=Math.min(12,meter+1);resultEl.textContent='Ganhou '+win;emit(innerWidth/2,innerHeight/4,80);mascot.classList.remove('mascot-cheer');void mascot.offsetWidth;mascot.classList.add('mascot-cheer');winSound.currentTime=0;winSound.play().catch(()=>{});}
+else resultEl.textContent='Sem combinação';
+buildMeter();spinning=false;}
+
 spinBtn.addEventListener('touchstart',spin);
 spinBtn.addEventListener('click',spin);
 
 document.getElementById('reset').addEventListener('click',()=>{balance=300;meter=0;buildMeter();resultEl.textContent='—';});
-document.getElementById('claim').addEventListener('click',()=>{if(meter>=12){balance+=200;meter=0;buildMeter();resultEl.textContent='BÔNUS COMPLETO +200';emit(innerWidth/2,innerHeight/4,120);mascot.classList.remove('mascot-cheer');void mascot.offsetWidth;mascot.classList.add('mascot-cheer');}else resultEl.textContent='Painel incompleto';});
+document.getElementById('claim').addEventListener('click',()=>{if(meter>=12){balance+=200;meter=0;buildMeter();resultEl.textContent='BÔNUS COMPLETO +200';emit(innerWidth/2,innerHeight/4,120);mascot.classList.remove('mascot-cheer');void mascot.offsetWidth;mascot.classList.add('mascot-cheer');winSound.currentTime=0;winSound.play().catch(()=>{});}else resultEl.textContent='Painel incompleto';});
+
 buildTracks();buildMeter();
 });
 </script>
